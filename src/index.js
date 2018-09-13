@@ -1,17 +1,20 @@
 module.exports = function getZerosCount(number, base) {
-    let res = 0;
-    const [div, pow] = divider(base);
-    while(number > 0){
-        number = Math.floor(number/div);
-        res += number;
-    }
-    return Math.floor(res/pow);
+    let res = Number.MAX_VALUE;
+    divider(base).forEach(item => {
+        let temp = number;
+        const {divider, power} = item;
+        let nulls = 0;
+        while(temp > 0){
+            temp = Math.floor(temp/divider);
+            nulls += temp;
+        }
+        res = Math.min(res, Math.floor(nulls/power))
+    });
+    return res;
 }
 
-
 const divider = num => {
-    let result = 1;
-    let power = 1;
+    let result = [];
     const finish = num
     for(let i = 2; i < finish; i++){
         if(num % i === 0){
@@ -21,12 +24,13 @@ const divider = num => {
                 pow++;
                 num /= i;
         }
-        if(result ** power < div ** pow) {
-            result = div;
-            power = pow;
+        result.push(
+            {
+                divider: div,
+                power: pow
+            }
+        )
         }
-        }
-        
     }
-    return result === 1 ? [num, 1]: [result, power] ;
+    return !result.length ? [{divider:num, power: 1}]: result ;
 }
